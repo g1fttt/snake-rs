@@ -50,6 +50,8 @@ impl Game {
         self.canvas.execute(cursor::Hide)?;
         self.clear_terminal()?;
 
+        terminal::enable_raw_mode()?;
+
         let mut timer = Timer::new();
 
         loop {
@@ -71,6 +73,8 @@ impl Game {
 
             self.draw()?;
         }
+
+        terminal::disable_raw_mode()?;
 
         self.canvas.execute(cursor::Show)?;
 
