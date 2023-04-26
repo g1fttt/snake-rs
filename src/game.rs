@@ -55,23 +55,12 @@ impl Game {
         loop {
             timer.tick();
 
-            if event::poll(Duration::from_millis(0))? {
-                if let Event::Key(event) = event::read()? {
-                    match event.code {
-                        KeyCode::Up => self.snake.set_direction(Direction::Up),
-                        KeyCode::Left => self.snake.set_direction(Direction::Left),
-                        KeyCode::Down => self.snake.set_direction(Direction::Down),
-                        KeyCode::Right => self.snake.set_direction(Direction::Right),
-                        _ => (),
-                    }
-                }
-            }
-
-            self.draw()?;
+            self.poll_input()?;
 
             if let Some(delta) = timer.delta() {
                 if delta >= Duration::from_secs_f32(1.0 / 10.0) {
                     timer.reset();
+
                     if let Err(err) = self.update() {
                         self.clear_terminal()?;
                         println!("{}", err);
@@ -79,6 +68,8 @@ impl Game {
                     }
                 }
             }
+
+            self.draw()?;
         }
 
         self.canvas.execute(cursor::Show)?;
@@ -105,6 +96,21 @@ impl Game {
         self.draw_board_floor()?;
         self.draw_fruit()?;
         self.snake.draw(&mut self.canvas)
+    }
+
+    fn poll_input(&mut self) -> crossterm::Result<()> {
+        if event::poll(Duration::from_millis(10))? {
+            if let Event::Key(event) = event::read()? {
+                match event.code {
+                    KeyCode::Up => self.snake.set_direction(Direction::Up),
+                    KeyCode::Left => self.snake.set_direction(Direction::Left),
+                    KeyCode::Down => self.snake.set_direction(Direction::Down),
+                    KeyCode::Right => self.snake.set_direction(Direction::Right),
+                    _ => (),
+                }
+            }
+        }
+        Ok(())
     }
 
     fn clear_terminal(&mut self) -> crossterm::Result<()> {

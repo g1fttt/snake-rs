@@ -26,12 +26,23 @@ impl Segment {
     }
 }
 
-// Public enum for Input System
+#[derive(PartialEq)]
 pub enum Direction {
     Right,
     Left,
     Up,
     Down,
+}
+
+impl Direction {
+    fn reversed(&self) -> Self {
+        match *self {
+            Self::Right => Self::Left,
+            Self::Left => Self::Right,
+            Self::Up => Self::Down,
+            Self::Down => Self::Up,
+        }
+    }
 }
 
 pub struct Snake {
@@ -142,7 +153,8 @@ impl Snake {
     }
 
     pub fn set_direction(&mut self, direction: Direction) {
-        // TODO: Check for reversed direction
-        self.direction = direction;
+        if self.direction != direction.reversed() {
+            self.direction = direction;
+        }
     }
 }
