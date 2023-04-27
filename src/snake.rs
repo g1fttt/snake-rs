@@ -49,6 +49,7 @@ pub struct Snake {
     segments: Vec<Segment>,
     direction: Direction,
     new_segment_added: bool,
+    fruits_eaten: u16,
 }
 
 impl Snake {
@@ -61,6 +62,7 @@ impl Snake {
             ],
             direction: Direction::Right,
             new_segment_added: false,
+            fruits_eaten: 0,
         }
     }
 
@@ -129,6 +131,7 @@ impl Snake {
             self.segments
                 .push(Segment::new(tail.x, tail.y, SegmentKind::Body));
             self.new_segment_added = true;
+            self.fruits_eaten += 1;
         }
     }
 
@@ -168,5 +171,9 @@ impl Snake {
         if self.direction != direction.reversed() {
             self.direction = direction;
         }
+    }
+
+    pub fn fruits_eaten(&self) -> u16 {
+        self.fruits_eaten
     }
 }

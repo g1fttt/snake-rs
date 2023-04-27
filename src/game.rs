@@ -101,6 +101,7 @@ impl Game {
     pub fn draw(&mut self) -> crossterm::Result<()> {
         self.draw_board_floor()?;
         self.draw_fruit()?;
+        self.draw_score()?;
         self.snake.draw(&mut self.canvas)
     }
 
@@ -127,6 +128,14 @@ impl Game {
             self.canvas,
             cursor::MoveTo(0, 0),
             terminal::Clear(terminal::ClearType::All)
+        )
+    }
+
+    fn draw_score(&mut self) -> crossterm::Result<()> {
+        execute!(
+            self.canvas,
+            cursor::MoveTo(self.board_size.x * 2 + 1, 0),
+            style::PrintStyledContent(format!("Score: {}", self.snake.fruits_eaten()).cyan())
         )
     }
 
