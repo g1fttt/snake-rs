@@ -4,7 +4,7 @@ use crate::{
 };
 
 use std::{
-    io::{self, Stdout},
+    io::{self, Error, ErrorKind, Stdout},
     time::Duration,
 };
 
@@ -57,7 +57,11 @@ impl Game {
         loop {
             timer.tick();
 
-            self.poll_input()?;
+            if let Err(err) = self.poll_input() {
+                self.clear_terminal()?;
+                println!("{}", err);
+                break;
+            }
 
             if let Some(delta) = timer.delta() {
                 if delta >= Duration::from_secs_f32(1.0 / 10.0) {
@@ -104,6 +108,9 @@ impl Game {
         if event::poll(Duration::from_millis(10))? {
             if let Event::Key(event) = event::read()? {
                 match event.code {
+                    KeyCode::Esc => {
+                        return Err(Error::new(ErrorKind::Interrupted, "Esc was pressed"))
+                    }
                     KeyCode::Up => self.snake.set_direction(Direction::Up),
                     KeyCode::Left => self.snake.set_direction(Direction::Left),
                     KeyCode::Down => self.snake.set_direction(Direction::Down),
