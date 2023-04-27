@@ -64,7 +64,7 @@ impl Snake {
         }
     }
 
-    pub fn update(&mut self) {
+    pub fn update(&mut self) -> Result<(), String> {
         let positions: Vec<(u16, u16)> = self
             .segments
             .iter()
@@ -88,11 +88,23 @@ impl Snake {
         if let Some(head) = self.segments.first_mut() {
             match self.direction {
                 Direction::Right => head.x += 1,
-                Direction::Left => head.x -= 1,
+                Direction::Left => {
+                    head.x = match head.x.checked_sub(1) {
+                        Some(x) => x,
+                        None => return Err("Snake hit the edge".to_string()),
+                    }
+                }
                 Direction::Down => head.y += 1,
-                Direction::Up => head.y -= 1,
+                Direction::Up => {
+                    head.y = match head.y.checked_sub(1) {
+                        Some(y) => y,
+                        None => return Err("Snake hit the edge".to_string()),
+                    }
+                }
             }
         }
+
+        Ok(())
     }
 
     pub fn draw(&self, canvas: &mut Stdout) -> crossterm::Result<()> {

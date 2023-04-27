@@ -91,9 +91,7 @@ impl Game {
             self.respawn_fruit();
         }
 
-        self.snake.update();
-
-        Ok(())
+        self.snake.update()
     }
 
     pub fn draw(&mut self) -> crossterm::Result<()> {
