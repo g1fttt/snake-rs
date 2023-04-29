@@ -21,7 +21,7 @@ struct Segment {
 }
 
 impl Segment {
-    pub fn new(x: u16, y: u16, kind: SegmentKind) -> Self {
+    fn new(x: u16, y: u16, kind: SegmentKind) -> Self {
         Self { x, y, kind }
     }
 }
