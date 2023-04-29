@@ -43,6 +43,15 @@ impl Direction {
             Self::Down => Self::Up,
         }
     }
+
+    // fn reverse(&mut self) {
+    //     *self = match *self {
+    //         Self::Right => Self::Left,
+    //         Self::Left => Self::Right,
+    //         Self::Up => Self::Down,
+    //         Self::Down => Self::Up,
+    //     };
+    // }
 }
 
 pub struct Snake {
@@ -66,7 +75,7 @@ impl Snake {
         }
     }
 
-    pub fn update(&mut self) -> Result<(), String> {
+    pub fn update(&mut self, board_size: &Vec2) -> Result<(), String> {
         let positions: Vec<(u16, u16)> = self
             .segments
             .iter()
@@ -89,18 +98,30 @@ impl Snake {
 
         if let Some(head) = self.segments.first_mut() {
             match self.direction {
-                Direction::Right => head.x += 1,
+                Direction::Right => {
+                    if head.x + 1 == board_size.x {
+                        head.x = 0;
+                    } else {
+                        head.x += 1;
+                    }
+                }
                 Direction::Left => {
                     head.x = match head.x.checked_sub(1) {
                         Some(x) => x,
-                        None => return Err("Snake hit the edge".to_string()),
+                        None => board_size.x - 1,
                     }
                 }
-                Direction::Down => head.y += 1,
+                Direction::Down => {
+                    if head.y + 1 == board_size.y {
+                        head.y = 0;
+                    } else {
+                        head.y += 1;
+                    }
+                }
                 Direction::Up => {
                     head.y = match head.y.checked_sub(1) {
                         Some(y) => y,
-                        None => return Err("Snake hit the edge".to_string()),
+                        None => board_size.y - 1,
                     }
                 }
             }
@@ -153,13 +174,14 @@ impl Snake {
         }
     }
 
-    pub fn hit_the_edge(&self, board_size: &Vec2) -> bool {
-        if let Some(head) = self.segments.first() {
-            head.x == board_size.x - 1 || head.y == board_size.y - 1
-        } else {
-            false
-        }
-    }
+    // TODO: May be should use it in another gamemode?
+    // pub fn hit_the_edge(&self, board_size: &Vec2) -> bool {
+    //     if let Some(head) = self.segments.first() {
+    //         head.x == board_size.x - 1 || head.y == board_size.y - 1
+    //     } else {
+    //         false
+    //     }
+    // }
 
     pub fn has_segment_at(&self, position: &Vec2) -> bool {
         self.segments

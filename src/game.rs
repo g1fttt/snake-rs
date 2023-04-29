@@ -88,14 +88,12 @@ impl Game {
     pub fn update(&mut self) -> Result<(), String> {
         if self.snake.ate_itself() {
             return Err("Snake ate itself".to_string());
-        } else if self.snake.hit_the_edge(&self.board_size) {
-            return Err("Snake hit the edge".to_string());
         } else if self.snake.ate_an_fruit(&self.fruit_position) {
             self.snake.add_segment();
             self.respawn_fruit();
         }
 
-        self.snake.update()
+        self.snake.update(&self.board_size)
     }
 
     pub fn draw(&mut self) -> crossterm::Result<()> {
