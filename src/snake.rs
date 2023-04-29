@@ -43,15 +43,6 @@ impl Direction {
             Self::Down => Self::Up,
         }
     }
-
-    // fn reverse(&mut self) {
-    //     *self = match *self {
-    //         Self::Right => Self::Left,
-    //         Self::Left => Self::Right,
-    //         Self::Up => Self::Down,
-    //         Self::Down => Self::Up,
-    //     };
-    // }
 }
 
 pub struct Snake {
