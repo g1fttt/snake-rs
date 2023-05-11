@@ -30,27 +30,29 @@ impl Vec2 {
 }
 
 pub struct Game {
-    snake: Box<Snake>,
+    snake: Snake,
     board_size: Vec2,
     fruit_position: Vec2,
     canvas: Stdout,
 }
 
 impl Game {
-    pub fn new(board_size: Vec2) -> Self {
-        Self {
-            snake: Box::new(Snake::new()),
+    pub fn new(board_size: Vec2) -> crossterm::Result<Self> {
+        let mut canvas = io::stdout();
+
+        canvas.execute(cursor::Hide)?;
+        terminal::enable_raw_mode()?;
+
+        Ok(Self {
+            snake: Snake::new(),
             board_size: board_size.clone(),
             fruit_position: Vec2::new((board_size.x / 2) as u16, (board_size.y / 2) as u16),
-            canvas: io::stdout(),
-        }
+            canvas,
+        })
     }
 
     pub fn init_loop(&mut self) -> crossterm::Result<()> {
-        self.canvas.execute(cursor::Hide)?;
         self.clear_terminal()?;
-
-        terminal::enable_raw_mode()?;
 
         let mut timer = Timer::new();
 
@@ -77,10 +79,6 @@ impl Game {
 
             self.draw()?;
         }
-
-        terminal::disable_raw_mode()?;
-
-        self.canvas.execute(cursor::Show)?;
 
         Ok(())
     }
@@ -169,5 +167,12 @@ impl Game {
             self.fruit_position.x = rng.gen_range(0..self.board_size.x);
             self.fruit_position.y = rng.gen_range(0..self.board_size.y);
         }
+    }
+}
+
+impl Drop for Game {
+    fn drop(&mut self) {
+        terminal::disable_raw_mode().unwrap();
+        self.canvas.execute(cursor::Show).unwrap();
     }
 }
